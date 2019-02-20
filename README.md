@@ -1,2 +1,2 @@
-# The templete web service
+# The template web service
 
