@@ -1,7 +1,7 @@
 package main 
 
 import (
-	srv "server_template"
+	srv "github.com/HomeKuts/server_template"
 )
 
 const versionMajor = "0.1"
