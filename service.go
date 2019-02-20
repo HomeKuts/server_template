@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 type Info struct {
 	Version string `json:"ver"`
 }
@@ -66,15 +65,36 @@ func Start(versionMajor, versionMin string) {
 		}
 	}()
 
+	signal_chan := make(chan os.Signal, 1)
+	signal.Notify(signal_chan,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
 
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
-	quit := make(chan os.Signal)
-	// kill (no param) default send syscall.SIGTERM
-	// kill -2 is syscall.SIGINT
-	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	exit_chan := make(chan int)
+	go func() {
+		for {
+			s := <-signal_chan
+			switch s {
+
+			// kill -SIGQUIT XXXX
+			// ps aux | grep -i cmd | grep -v grep | awk {'print $2'} | xargs kill -3
+			case syscall.SIGQUIT:
+				printStatus()
+
+			// kill -SIGINT XXXX or Ctrl+c
+			// ps aux | grep -i cmd | grep -v grep | awk {'print $2'} | xargs kill -2
+			case syscall.SIGINT, syscall.SIGTERM:
+				exit_chan <- 1
+
+			default:
+				log.Info("Unknown signal.")
+				exit_chan <- 1
+			}
+		}
+	}()
+	<-exit_chan
+
 	log.Info("Server shutdown, wait 5 seconds")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -124,6 +144,10 @@ func handlerMiddleware() gin.HandlerFunc {
 
 		log.Infof("%s %s %s %s %d %s %s", clientIP, origin, method, path, statusCode, latency, errorMessage)
 	}
+}
+
+func printStatus() {
+	log.Debugf("Server version: %v", info.Version)
 }
 
 func handlerRoot(c *gin.Context) {
