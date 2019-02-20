@@ -18,6 +18,8 @@ type Info struct {
 var info Info
 
 func init() {
+	
+	// Встановлюємо рівень налагодження gin: debug, realese, test
 	switch *GinMode {
 	case "release":
 		gin.SetMode(gin.ReleaseMode)
@@ -27,9 +29,10 @@ func init() {
 		gin.SetMode(gin.DebugMode)
 	}
 
-	gin.DisableConsoleColor()
+//	gin.DisableConsoleColor()
 }
 
+// Налаштувати сервер на роботу. Налаштування винесено в окрему функцію для потреб тестування
 func setupRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(handlerMiddleware())
@@ -41,6 +44,10 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
+// Старт роботи сервера. 
+// Корректно припинити роботу сервера можливо пославши йому сигнали: SIGINT або SIGTERM:
+// kill -2 pid або нажати на клавіатурі Ctrl+C.  На сигнал SIGQUIT (kill -3 pid) сервер видасть 
+// в лог файл поточні показаники роботи
 func Start(versionMajor, versionMin string) {
 	info = Info{Version: versionMajor + "." + versionMin}
 	log.Infof("Server ver.%v start", info.Version)
