@@ -11,6 +11,7 @@ import (
 const ORIGIN_VALID = "0.0.0.0:4200"
 const ORIGIN_INVALID = "0.0.0.0:4201"
 
+// Перевірка запиту з корректним Origin 
 func TestValidOrigin(t *testing.T) {
 	router := setupRouter()
 
@@ -22,6 +23,7 @@ func TestValidOrigin(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
+// Перевірка запиту з некорректним Origin 
 func TestInValidOrigin(t *testing.T) {
 	router := setupRouter()
 
@@ -33,6 +35,7 @@ func TestInValidOrigin(t *testing.T) {
 	assert.Equal(t, http.StatusForbidden, w.Code)
 }
 
+// Перевірка запиту з неснуючим маршрутом 
 func TestStatusNotFound(t *testing.T) {
 	router := setupRouter()
 
@@ -44,6 +47,7 @@ func TestStatusNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+// Перевірка запиту з маршрутом: /info 
 func TestInfo(t *testing.T) {
         router := setupRouter()
 

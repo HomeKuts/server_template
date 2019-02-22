@@ -78,6 +78,7 @@ func Start(versionMajor, versionMin string) {
 		syscall.SIGTERM,
 		syscall.SIGQUIT)
 
+	// Обробка KILL - сигналів для корректного завершення програми та виводу інформації її стану
 	exit_chan := make(chan int)
 	go func() {
 		for {
@@ -104,6 +105,7 @@ func Start(versionMajor, versionMin string) {
 
 	log.Info("Server shutdown, wait 5 seconds")
 
+	// Завершуємо роботу дав серверу на коректне завершення 5 секунд
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
@@ -116,6 +118,7 @@ func Start(versionMajor, versionMin string) {
 	log.Info("Server stop")
 }
 
+// Функція перехоплювач всіх запитів. Використовується для їх журналювання та перевірки
 func handlerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -128,6 +131,7 @@ func handlerMiddleware() gin.HandlerFunc {
 		origin := request.Header.Get("Origin")
 
 		// Check for valid Origin
+		// Перевірка на валідний Origin (при потрібності обмежуємо доступ тільки зі свого домену) 
 		if origin == *Origin {
 			//			c.Header("Access-Control-Allow-Origin", "*")
 			//			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
@@ -153,6 +157,7 @@ func handlerMiddleware() gin.HandlerFunc {
 	}
 }
 
+// Вивід інформації про стан роботи програми.
 func printStatus() {
 	log.Debugf("Server version: %v", info.Version)
 }
