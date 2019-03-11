@@ -18,7 +18,7 @@ type Info struct {
 var info Info
 
 func init() {
-	
+
 	// Встановлюємо рівень налагодження gin: debug, realese, test
 	switch *GinMode {
 	case "release":
@@ -29,7 +29,7 @@ func init() {
 		gin.SetMode(gin.DebugMode)
 	}
 
-//	gin.DisableConsoleColor()
+	//	gin.DisableConsoleColor()
 }
 
 // Налаштувати сервер на роботу. Налаштування винесено в окрему функцію для потреб тестування
@@ -44,9 +44,9 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-// Старт роботи сервера. 
+// Старт роботи сервера.
 // Корректно припинити роботу сервера можливо пославши йому сигнали: SIGINT або SIGTERM:
-// kill -2 pid або нажати на клавіатурі Ctrl+C.  На сигнал SIGQUIT (kill -3 pid) сервер видасть 
+// kill -2 pid або нажати на клавіатурі Ctrl+C.  На сигнал SIGQUIT (kill -3 pid) сервер видасть
 // в лог файл поточні показаники роботи
 func Start(versionMajor, versionMin string) {
 	info = Info{Version: versionMajor + "." + versionMin}
@@ -65,11 +65,19 @@ func Start(versionMajor, versionMin string) {
 
 	go func() {
 		log.Infof("Server listen: %v", *Addr)
+		var err error
 
-		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Error: %s\n", err)
+		if *EnableSSL {
+			log.Info("SSL enabled")
+			err = srv.ListenAndServeTLS(*SSLcertFile, *SSLkeyFile);
+		} else {
+			err = srv.ListenAndServe()
 		}
+		
+		if err != nil  && err != http.ErrServerClosed {
+			log.Fatal(err)
+		}
+
 	}()
 
 	signal_chan := make(chan os.Signal, 1)
@@ -131,7 +139,7 @@ func handlerMiddleware() gin.HandlerFunc {
 		origin := request.Header.Get("Origin")
 
 		// Check for valid Origin
-		// Перевірка на валідний Origin (при потрібності обмежуємо доступ тільки зі свого домену) 
+		// Перевірка на валідний Origin (при потрібності обмежуємо доступ тільки зі свого домену)
 		if origin == *Origin {
 			//			c.Header("Access-Control-Allow-Origin", "*")
 			//			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")

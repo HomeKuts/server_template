@@ -37,6 +37,16 @@ var (
 	// Рівень налагодження gin: debug, realese, test
 	GinMode = flag.String("GinMode", "debug", "")
 
+	// Включити протокол шифрування: true or false
+	EnableSSL = flag.Bool("enableSSL", false, "")
+
+	// файл сертифікату
+	SSLcertFile = flag.String("certFile", "certFile", "")
+
+	// файл ключа сертифікату
+	SSLkeyFile = flag.String("keyFile", "keyFile", "")
+
+
 	log *zap.SugaredLogger
 )
 
@@ -102,4 +112,8 @@ func init() {
 	log.Debugf("Timeout: %v", *Timeout)
 	log.Debugf("Origin: %v", *Origin)
 	log.Debugf("GinMode: %v", *GinMode)
+
+	log.Debugf("EnableSSL: %v", *EnableSSL)
+	log.Debugf("SSLkeyFile: %v", *SSLkeyFile)
+	log.Debugf("SSLcertFile: %v", *SSLcertFile)
 }
