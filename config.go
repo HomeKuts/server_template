@@ -55,7 +55,7 @@ func myTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format(*LogTimeFormat))
 }
 
-func init() {
+func Config() {
 	iniflags.Parse()
 
 	var atomicLevel zapcore.Level

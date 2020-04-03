@@ -11,6 +11,7 @@ var (
 )
 
 func main() {
+	srv.Config()
 	srv.Start(versionMajor, version);
 }
 

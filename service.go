@@ -17,8 +17,8 @@ type Info struct {
 
 var info Info
 
-func init() {
-
+// Налаштувати сервер на роботу.
+func setupRouter() *gin.Engine {
 	// Встановлюємо рівень налагодження gin: debug, realese, test
 	switch *GinMode {
 	case "release":
@@ -30,10 +30,7 @@ func init() {
 	}
 
 	//	gin.DisableConsoleColor()
-}
 
-// Налаштувати сервер на роботу. Налаштування винесено в окрему функцію для потреб тестування
-func setupRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(handlerMiddleware())
 	r.Use(gin.Recovery())
@@ -168,6 +165,7 @@ func handlerMiddleware() gin.HandlerFunc {
 // Вивід інформації про стан роботи програми.
 func printStatus() {
 	log.Debugf("Server version: %v", info.Version)
+//	log.Debugf("gin version: %v", gin.Version)
 }
 
 func handlerRoot(c *gin.Context) {

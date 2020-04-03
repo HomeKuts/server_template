@@ -6,10 +6,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"os"
 )
 
 const ORIGIN_VALID = "0.0.0.0:4200"
 const ORIGIN_INVALID = "0.0.0.0:4201"
+
+func TestMain(m *testing.M) {
+	Config()
+	os.Exit(m.Run())
+}
 
 // Перевірка запиту з корректним Origin 
 func TestValidOrigin(t *testing.T) {
